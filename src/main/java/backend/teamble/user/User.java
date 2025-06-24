@@ -4,10 +4,7 @@ import backend.teamble.message.Message;
 import backend.teamble.message.ReadReceipt;
 import backend.teamble.project.Membership;
 import backend.teamble.schedule.Schedule;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,13 +12,14 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
-@Table(name = "User")
+@Table(name = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -32,6 +30,8 @@ public class User {
     private String department;
     private Boolean chatNotice;
     private Boolean scheduleNotice;
+
+    private String role;
 
     @OneToMany(mappedBy = "user")
     private List<Membership> memberships;
