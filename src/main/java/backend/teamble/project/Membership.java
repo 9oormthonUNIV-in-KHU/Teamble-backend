@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -27,6 +28,12 @@ public class Membership {
     @JoinColumn(name = "projectId", nullable = false)
     private Project project;
 
+    @CreationTimestamp
     private LocalDateTime joinedAt;
+
+    public Membership(User user, Project project) {
+        this.user = user;
+        this.project = project;
+    }
 }
 
