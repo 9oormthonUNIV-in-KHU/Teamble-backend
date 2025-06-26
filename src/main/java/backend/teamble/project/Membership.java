@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class Membership {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
