@@ -1,9 +1,13 @@
 package backend.teamble.project;
 
+import backend.teamble.project.dto.MyTeamsResponse;
 import backend.teamble.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,5 +25,16 @@ public class ProjectService {
         membershipRepository.save(membership);
 
         return project;
+    }
+
+    public List<MyTeamsResponse> getMyTeams(User user) {
+        List<Membership> memberships = membershipRepository.findByUser(user);
+
+        return memberships.stream()
+                .map(membership -> {
+                    Project project = membership.getProject();
+                    return new MyTeamsResponse(project.getId(), project.getName());
+                })
+                .collect(Collectors.toList());
     }
 }
