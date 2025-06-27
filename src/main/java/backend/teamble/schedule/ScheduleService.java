@@ -1,13 +1,19 @@
 package backend.teamble.schedule;
 
+import backend.teamble.project.Membership;
 import backend.teamble.project.MembershipRepository;
 import backend.teamble.project.Project;
 import backend.teamble.project.ProjectRepository;
 import backend.teamble.schedule.dto.CreateScheduleRequest;
+import backend.teamble.schedule.dto.MyScheduleResponse;
 import backend.teamble.user.User;
+import backend.teamble.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +22,7 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final ProjectRepository projectRepository;
     private final MembershipRepository membershipRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public Schedule createSchedule(CreateScheduleRequest request, User user) {
@@ -29,5 +36,26 @@ public class ScheduleService {
 
         Schedule schedule = new Schedule(request.getTitle(), request.getDate(), team, user);
         return scheduleRepository.save(schedule);
+    }
+
+    public List<MyScheduleResponse> getMySchedules(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+
+        // 유저가 속한 모든 프로젝트(team)
+        List<Project> projects = user.getMemberships()
+                .stream()
+                .map(Membership::getProject)
+                .toList();
+
+        List<MyScheduleResponse> responses = new ArrayList<>();
+
+        for (Project project : projects) {
+            scheduleRepository.findByProject(project).forEach(schedule ->
+                    responses.add(new MyScheduleResponse(schedule.getId(), schedule.getTitle(), schedule.getEndTime()))
+            );
+        }
+
+        return responses;
     }
 }
