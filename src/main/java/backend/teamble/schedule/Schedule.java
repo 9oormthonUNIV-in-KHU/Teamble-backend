@@ -34,5 +34,14 @@ public class Schedule {
     private User user;
 
     private Integer defaultAlarmMinutesBefore;
+
+    public Schedule(String title, LocalDateTime date, Project team, User user) {
+        this.title = title;
+        this.endTime = date;
+        this.project = team;
+        this.user = user;
+
+        this.defaultAlarmMinutesBefore = 60;
+    }
 }
 
