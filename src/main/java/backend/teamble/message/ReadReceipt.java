@@ -4,32 +4,27 @@ import backend.teamble.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Entity
-@Table(name = "ReadReceipt",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"messageId", "userId"})
-)
+@Table(name = "Read_receipt")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class ReadReceipt {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
-    private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "messageId", nullable = false)
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "message_id", nullable = false)
     private Message message;
 
-    private LocalDateTime readAt;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @Column(nullable = false)
+    private Boolean isRead = false;
+
 }
-
-
