@@ -10,4 +10,6 @@ import java.util.List;
 public interface MembershipRepository extends JpaRepository<Membership, Long> {
 
     List<Membership> findByUser(User user);
+
+    boolean existsByProjectAndUser(Project team, User inviter);
 }
