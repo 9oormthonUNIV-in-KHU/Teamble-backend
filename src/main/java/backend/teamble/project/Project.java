@@ -31,9 +31,10 @@ public class Project {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    public Project(String name, String topic) {
+    public Project(String name, String topic, User user) {
         this.name = name;
         this.topic = topic;
+        this.user = user;
     }
 
     @OneToMany(mappedBy = "project")
