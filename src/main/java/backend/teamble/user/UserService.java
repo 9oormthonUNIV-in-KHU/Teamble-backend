@@ -1,9 +1,7 @@
 package backend.teamble.user;
 
 import backend.teamble.config.jwt.JwtTokenProvider;
-import backend.teamble.user.dto.JwtTokenResponse;
-import backend.teamble.user.dto.UserLoginRequest;
-import backend.teamble.user.dto.UserSignupRequest;
+import backend.teamble.user.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -43,5 +41,15 @@ public class UserService {
         // 실제로는 클라이언트가 토큰을 삭제하면 됨.
         // 서버 측에서는 "정상 로그아웃 처리됨" 정도만 응답
         System.out.println("로그아웃 요청 받은 토큰: " + token);
+    }
+
+    public void updateNoticeSettings(User user, NoticeSettingRequest request) {
+        if (request.getChatNotice() != null) {
+            user.setChatNotice(request.getChatNotice());
+        }
+        if (request.getScheduleNotice() != null) {
+            user.setScheduleNotice(request.getScheduleNotice());
+        }
+        userRepository.save(user);
     }
 }

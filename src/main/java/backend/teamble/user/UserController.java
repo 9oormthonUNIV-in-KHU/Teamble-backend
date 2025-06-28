@@ -1,10 +1,7 @@
 package backend.teamble.user;
 
 import backend.teamble.security.CustomUserDetails;
-import backend.teamble.user.dto.JwtTokenResponse;
-import backend.teamble.user.dto.UserLoginRequest;
-import backend.teamble.user.dto.UserResponse;
-import backend.teamble.user.dto.UserSignupRequest;
+import backend.teamble.user.dto.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +40,13 @@ public class UserController {
     public ResponseEntity<?> me(@AuthenticationPrincipal CustomUserDetails userDetails) {
         User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow();
         return ResponseEntity.ok(new UserResponse(user.getId(), user.getName(), user.getEmail()));
+    }
+
+    @PatchMapping("/me/settings")
+    public ResponseEntity<NoticeSettingResponse> updateSettings(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody NoticeSettingRequest request) {
+
+        userService.updateNoticeSettings(userDetails.getUser(), request);
+        return ResponseEntity.ok(new NoticeSettingResponse("설정이 업데이트되었습니다."));
     }
 
     private record SignupResponse(Long userId, String message) {}

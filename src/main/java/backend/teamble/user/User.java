@@ -37,9 +37,9 @@ public class User {
 
     private String department;
 
-    private Boolean chatNotice;
+    private Boolean chatNotice = true;
 
-    private Boolean scheduleNotice;
+    private Boolean scheduleNotice = true;
 
     @Column(nullable = false)
     private String role = "USER"; // 기본값을 "USER"로 설정

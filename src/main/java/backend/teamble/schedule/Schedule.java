@@ -33,15 +33,13 @@ public class Schedule {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private Integer defaultAlarmMinutesBefore;
+    private Integer defaultAlarmMinutesBefore = 30;
 
     public Schedule(String title, LocalDateTime date, Project team, User user) {
         this.title = title;
         this.endTime = date;
         this.project = team;
         this.user = user;
-
-        this.defaultAlarmMinutesBefore = 60;
     }
 }
 
