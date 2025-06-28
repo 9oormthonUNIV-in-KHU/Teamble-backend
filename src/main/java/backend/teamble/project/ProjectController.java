@@ -40,4 +40,10 @@ public class ProjectController {
         return ResponseEntity.ok(new InviteResponse("팀원 초대가 전송되었습니다."));
     }
 
+    @GetMapping("/teams/{teamId}/roles")
+    public ResponseEntity<TeamRolesWrapper> getTeamRoles(@PathVariable Long teamId) {
+        TeamRolesWrapper rolesWrapper = new TeamRolesWrapper(projectService.getTeamRoles(teamId));
+        return ResponseEntity.ok(rolesWrapper);
+    }
+
 }

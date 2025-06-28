@@ -1,6 +1,7 @@
 package backend.teamble.project;
 
 import backend.teamble.project.dto.MyTeamsResponse;
+import backend.teamble.project.dto.TeamRoleResponse;
 import backend.teamble.user.User;
 import backend.teamble.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -60,4 +61,15 @@ public class ProjectService {
         membershipRepository.save(membership);
     }
 
+    public List<TeamRoleResponse> getTeamRoles(Long teamId) {
+        List<Membership> memberships = membershipRepository.findByProjectId(teamId);
+
+        return memberships.stream()
+                .map(m -> new TeamRoleResponse(
+                        m.getUser().getId(),
+                        m.getUser().getName(),
+                        m.getRole() // Membership 엔티티에 역할 필드가 있다고 가정
+                ))
+                .collect(Collectors.toList());
+    }
 }

@@ -28,6 +28,8 @@ public class Membership {
     @JoinColumn(name = "project_id")
     private Project project;
 
+    private String role = "팀원";
+
     @CreationTimestamp
     private LocalDateTime joinedAt;
 

@@ -12,4 +12,6 @@ public interface MembershipRepository extends JpaRepository<Membership, Long> {
     List<Membership> findByUser(User user);
 
     boolean existsByProjectAndUser(Project team, User inviter);
+
+    List<Membership> findByProjectId(Long teamId);
 }
