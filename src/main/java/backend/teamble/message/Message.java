@@ -1,6 +1,5 @@
 package backend.teamble.message;
 
-import backend.teamble.message.ReadReceipt;
 import backend.teamble.project.Project;
 import backend.teamble.user.User;
 import jakarta.persistence.*;
@@ -41,11 +40,18 @@ public class Message {
     @Column(nullable = false)
     private Boolean deleted = false;
 
-    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ReadReceipt> readReceipts;
-
     @PrePersist
     protected void onCreate() {
         this.timestamp = LocalDateTime.now();
     }
+    @Column(name = "expires_at")
+    private LocalDateTime expiresAt;
+
+    @Column(nullable = false)
+    private Boolean responded = false;
+
+    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MessageStatus> messageStatuses;
+
+
 }

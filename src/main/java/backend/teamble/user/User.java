@@ -1,7 +1,6 @@
 package backend.teamble.user;
 
 import backend.teamble.message.Message;
-import backend.teamble.message.ReadReceipt;
 import backend.teamble.project.Membership;
 import backend.teamble.project.Project;
 import backend.teamble.schedule.Schedule;
@@ -53,9 +52,6 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Schedule> schedules;
-
-    @OneToMany(mappedBy = "user")
-    private List<ReadReceipt> readReceipts;
 
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = true)

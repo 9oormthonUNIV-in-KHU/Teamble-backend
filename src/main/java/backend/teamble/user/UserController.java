@@ -28,10 +28,9 @@ public class UserController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout() {
-        return ResponseEntity.ok().body(
-                new MessageResponse("로그아웃 성공 (클라이언트 토큰 삭제 필요)")
-        );
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) {
+        userService.logout(token);
+        return ResponseEntity.ok().body(new MessageResponse("로그아웃 성공"));
     }
 
     private record SignupResponse(Long userId, String message) {}

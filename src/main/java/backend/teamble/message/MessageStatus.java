@@ -5,12 +5,12 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "Read_receipt")
+@Table(name = "message_status")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReadReceipt {
+public class MessageStatus {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,4 +27,6 @@ public class ReadReceipt {
     @Column(nullable = false)
     private Boolean isRead = false;
 
+    @Column(nullable = false, length = 20)
+    private String responded = "pending";  // 초기값 "pending"
 }

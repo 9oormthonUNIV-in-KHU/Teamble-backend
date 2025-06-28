@@ -39,4 +39,9 @@ public class UserService {
         String token = jwtTokenProvider.createToken(user.getEmail());
         return new JwtTokenResponse(token, user.getId());
     }
+    public void logout(String token) {
+        // 실제로는 클라이언트가 토큰을 삭제하면 됨.
+        // 서버 측에서는 "정상 로그아웃 처리됨" 정도만 응답
+        System.out.println("로그아웃 요청 받은 토큰: " + token);
+    }
 }
