@@ -10,7 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Membership")
+@Table(name = "membership")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,11 +21,11 @@ public class Membership {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "projectId", nullable = false)
+    @JoinColumn(name = "project_id")
     private Project project;
 
     @CreationTimestamp

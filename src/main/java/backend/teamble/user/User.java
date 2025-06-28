@@ -3,6 +3,7 @@ package backend.teamble.user;
 import backend.teamble.message.Message;
 import backend.teamble.message.ReadReceipt;
 import backend.teamble.project.Membership;
+import backend.teamble.project.Project;
 import backend.teamble.schedule.Schedule;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,16 +23,27 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
     private String password;
+
     private String university;
+
     private String college;
+
     private String department;
+
     private Boolean chatNotice;
+
     private Boolean scheduleNotice;
 
-    private String role;
+    @Column(nullable = false)
+    private String role = "USER"; // 기본값을 "USER"로 설정
 
     @OneToMany(mappedBy = "user")
     private List<Membership> memberships;
@@ -44,5 +56,8 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<ReadReceipt> readReceipts;
-}
 
+    @ManyToOne
+    @JoinColumn(name = "project_id", nullable = true)
+    private Project project;
+}

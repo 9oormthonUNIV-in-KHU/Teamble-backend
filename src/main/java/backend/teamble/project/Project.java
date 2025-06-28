@@ -2,8 +2,10 @@ package backend.teamble.project;
 
 import backend.teamble.message.Message;
 import backend.teamble.schedule.Schedule;
+import backend.teamble.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -14,6 +16,7 @@ import java.util.List;
 @Entity
 @Table(name = "Project")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Project {
@@ -42,7 +45,9 @@ public class Project {
     @OneToMany(mappedBy = "project")
     private List<Membership> memberships;
 
-
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 
 }

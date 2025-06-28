@@ -21,7 +21,7 @@ public class Schedule {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "projectId", nullable = false)
+    @JoinColumn(name = "project_id")
     private Project project;
 
     private String title;
@@ -30,7 +30,7 @@ public class Schedule {
     private LocalDateTime endTime;
 
     @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
     private Integer defaultAlarmMinutesBefore;

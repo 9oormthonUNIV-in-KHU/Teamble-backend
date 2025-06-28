@@ -2,8 +2,13 @@ package backend.teamble.user;
 
 import backend.teamble.user.dto.UserLoginRequest;
 import backend.teamble.user.dto.UserSignupRequest;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,71 +17,90 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Transactional
 public class UserIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
+    private final String testEmail = "login@example.com";
+    private final String testPassword = "securepass";
+
+    @BeforeEach
+    void cleanTestUser() {
+        userRepository.deleteByEmail(testEmail);
+    }
+
     @Test
-    void threeUsersFlow() throws Exception {
-        String[] emails = {
-                "testuser1@example.com",
-                "testuser2@example.com",
-                "testuser3@example.com"
-        };
-        String[] names = {"유저1", "유저2", "유저3"};
-        String[] passwords = {"pw1!Strong", "pw2!Strong", "pw3!Strong"};
+    @DisplayName("회원가입 → 로그인 → 로그아웃 성공 흐름")
+    void userSignupLoginLogout() throws Exception {
+        // ------------------------------
+        // 1. 회원가입 요청
+        // ------------------------------
+        UserSignupRequest signupRequest = new UserSignupRequest();
+        signupRequest.setName("로그인유저");
+        signupRequest.setEmail(testEmail);
+        signupRequest.setPassword(testPassword);
 
-        for (int i = 0; i < 3; i++) {
-            // 회원가입
-            UserSignupRequest signupRequest = new UserSignupRequest();
-            signupRequest.setName(names[i]);
-            signupRequest.setEmail(emails[i]);
-            signupRequest.setPassword(passwords[i]);
-            String signupJson = objectMapper.writeValueAsString(signupRequest);
+        String signupJson = objectMapper.writeValueAsString(signupRequest);
+        System.out.println("▶ 회원가입 요청:\n" + signupJson);
 
-            MvcResult signupResult = mockMvc.perform(post("/users/signup")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(signupJson))
-                    .andExpect(status().isOk())
-                    .andReturn();
+        MvcResult signupResult = mockMvc.perform(post("/users/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(signupJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").exists())
+                .andExpect(jsonPath("$.message").value("회원가입이 완료되었습니다."))
+                .andReturn();
 
-            System.out.println("📦 [회원가입 요청 - " + names[i] + "]: " + signupJson);
-            System.out.println("📬 [회원가입 응답 - " + names[i] + "]: " + signupResult.getResponse().getContentAsString());
+        String signupResponse = signupResult.getResponse().getContentAsString();
+        System.out.println("◀ 회원가입 응답:\n" + signupResponse);
 
-            // 로그인
-            UserLoginRequest loginRequest = new UserLoginRequest();
-            loginRequest.setEmail(emails[i]);
-            loginRequest.setPassword(passwords[i]);
-            String loginJson = objectMapper.writeValueAsString(loginRequest);
+        // ------------------------------
+        // 2. 로그인 요청
+        // ------------------------------
+        UserLoginRequest loginRequest = new UserLoginRequest();
+        loginRequest.setEmail(testEmail);
+        loginRequest.setPassword(testPassword);
 
-            MvcResult loginResult = mockMvc.perform(post("/users/login")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(loginJson))
-                    .andExpect(status().isOk())
-                    .andReturn();
+        String loginJson = objectMapper.writeValueAsString(loginRequest);
+        System.out.println("▶ 로그인 요청:\n" + loginJson);
 
-            String token = objectMapper.readTree(loginResult.getResponse().getContentAsString()).get("token").asText();
+        MvcResult loginResult = mockMvc.perform(post("/users/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").exists())
+                .andReturn();
 
-            System.out.println("📦 [로그인 요청 - " + names[i] + "]: " + loginJson);
-            System.out.println("📬 [로그인 응답 - " + names[i] + "]: " + loginResult.getResponse().getContentAsString());
+        String loginResponse = loginResult.getResponse().getContentAsString();
+        System.out.println("◀ 로그인 응답:\n" + loginResponse);
 
-            // 로그아웃
-            MvcResult logoutResult = mockMvc.perform(post("/users/logout")
-                            .header("Authorization", "Bearer " + token))
-                    .andExpect(status().isOk())
-                    .andReturn();
+        JsonNode loginNode = objectMapper.readTree(loginResponse);
+        String token = loginNode.get("token").asText();
 
-            System.out.println("📦 [로그아웃 요청 - " + names[i] + "]");
-            System.out.println("📬 [로그아웃 응답 - " + names[i] + "]: " + logoutResult.getResponse().getContentAsString());
-            System.out.println("---------------------------------------------------------");
-        }
+        // ------------------------------
+        // 3. 로그아웃 요청
+        // ------------------------------
+        System.out.println("▶ 로그아웃 요청: Authorization Bearer 토큰 포함");
+
+        MvcResult logoutResult = mockMvc.perform(post("/users/logout")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String logoutResponse = logoutResult.getResponse().getContentAsString();
+        System.out.println("◀ 로그아웃 응답:\n" + logoutResponse);
     }
 }
