@@ -20,7 +20,7 @@ public class ProjectService {
 
     @Transactional
     public Project createTeam(String teamName, String topic, User user) {
-        Project project = new Project(teamName, topic);
+        Project project = new Project(teamName, topic, user);
         projectRepository.save(project);
 
         Membership membership = new Membership(user, project);
